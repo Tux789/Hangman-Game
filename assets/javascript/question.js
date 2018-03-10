@@ -7,7 +7,7 @@ function triviaQuestion(question, answer) {
 	this.getBlankStr = function(){
 		var returnStr = "";
 		for(i=0;i<this.answer.length;i++){
-			returnStr = returnStr + "_"
+			returnStr = returnStr + "_";
 		}
 		return returnStr;
 	};

@@ -14,6 +14,9 @@ body{
 #comboValue{
 	color: white;
 }
+button{
+	background-color: black;
+}
 #life-bar-container{
 	/*width: 45%;*/
 	height: 30px;
