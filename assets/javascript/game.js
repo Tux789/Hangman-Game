@@ -8,6 +8,7 @@ var userLosses = 0;
 var userGuessesLeft = numberOfGuesses;
 var userGuesses = [];
 var userInputArray = [];
+var comboValue = 0;
 
 function playSound(source){
 	var audio = new Audio(source);
@@ -24,6 +25,7 @@ function updateHealth(){
 	//console.log(document.getElementById("life-bar"));
 
 	var healthPercent = userGuessesLeft/numberOfGuesses*100;
+	document.getElementById("bar-text").textContent = "Life: " + userGuessesLeft + " Guesses Left";
 	if(userGuessesLeft < 3){
 		document.getElementById("life-bar-container").classList.add("criticalAnimate");
 	}else{
@@ -38,6 +40,17 @@ function updateHealth(){
 	console.log("Health = " + percentStr);
 	lifeBarDiv.style.width = percentStr;
 
+}
+function updateCombo(){
+
+	if(comboValue > 0){
+		document.getElementById("comboTitle").style.visibility = "visible";
+		document.getElementById("comboValue").style.visibility = "visible";
+		document.getElementById("comboValue").textContent = "x" + comboValue;
+	}else{
+		document.getElementById("comboTitle").style.visibility = "hidden";
+		document.getElementById("comboValue").style.visibility = "hidden";
+	}
 }
 function addZeros(score){
 	var scoreStr = "";
@@ -67,7 +80,8 @@ function updateScreen(question){
 	document.getElementById("questionStr").textContent = question.question;
 	displayAnswerStr(question);
 	document.getElementById("guessStr").textContent = getGuessString();
-	document.getElementById("bar-text").textContent = "Life: " + userGuessesLeft + " Guesses Left"; 
+	updateCombo();
+	 
 	
 
 }
@@ -103,6 +117,29 @@ function lose(){
 	userLosses++;
 	resetGame();
 }
+function onMatch(trivia){
+playSound("assets/media/126413__cabeeno-rossley__collect-special-coin.wav");
+			trivia.lettersSolved++;
+			comboValue++;
+
+			if(trivia.lettersSolved === trivia.lettersToSolve){
+				win();				
+			}// check win end
+}
+function onNoMatch(userGuess){
+document.getElementById("life-bar-container").classList.add("hitAnimate");
+					playSound("assets/media/126423__cabeeno-rossley__shoot-laser.wav");
+					userGuesses.push(userGuess);
+					userGuessesLeft--;
+					comboValue = 0;
+					setTimeout(function(){
+						document.getElementById("life-bar-container").classList.remove("hitAnimate")},500);
+					if(userGuessesLeft < 1){
+						lose();
+					}
+}
+
+
 setUpMusic();
  var trivia = generateQuestion();
 //generateQuestion(trivia);
@@ -144,25 +181,12 @@ if(validInput){
 			if(userGuess === trivia.answer[i].toLowerCase()){
 					//play sound
 			found = true;
-			playSound("assets/media/126413__cabeeno-rossley__collect-special-coin.wav");
-			trivia.lettersSolved++;
-
-			if(trivia.lettersSolved === trivia.lettersToSolve){
-				win();				
-			}// check win end
+			onMatch(trivia);
+			
 		}//match found end
 				}// loop to find match end
 				if(!found){
-
-					document.getElementById("life-bar-container").classList.add("hitAnimate");
-					playSound("assets/media/126423__cabeeno-rossley__shoot-laser.wav");
-					userGuesses.push(userGuess);
-					userGuessesLeft--;
-					setTimeout(function(){
-						document.getElementById("life-bar-container").classList.remove("hitAnimate")},500);
-					if(userGuessesLeft < 1){
-						lose();
-					}
+					onNoMatch(userGuess);
 									
 				}// no match found end
 		}// new character end
